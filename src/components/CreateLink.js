@@ -1,5 +1,17 @@
 import React, { Componet } from 'react';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
 
+const POST_MUTATION = gql`
+  mutation PostMutation($description: String!, $url: String!) {
+    post(description: $description, url: $url) {
+      id
+      createdAt
+      url
+      description
+    }
+  }
+`
 class CreateLink extends Componet {
   state ={
     description: '',
@@ -15,7 +27,11 @@ class CreateLink extends Componet {
           <input className="mb2" value={description} onChange={e => this.setState({description: e.target.value})} type="text" placeholder="A description for the link" />
           <input className="mb2" value={url} onChange={e => this.setState({url: e.target.value})} type="text" placeholder="A url for the link" />
         </div>
-        <button onClick={`something`}>Submit</button>
+        <Mutation mutation={POST_MUTATION} variables={{ description, url }}>
+          {() =>(
+            <button onClick={`something`}>Submit</button>
+          )}
+        </Mutation>
       </div>
     )
   }

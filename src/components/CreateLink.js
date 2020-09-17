@@ -27,7 +27,7 @@ class CreateLink extends Component {
           <input className="mb2" value={description} onChange={e => this.setState({description: e.target.value})} type="text" placeholder="A description for the link" />
           <input className="mb2" value={url} onChange={e => this.setState({url: e.target.value})} type="text" placeholder="A url for the link" />
         </div>
-        <Mutation mutation={POST_MUTATION} variables={{ description, url }}>
+        <Mutation mutation={POST_MUTATION} variables={{ description, url }} onCompleted={() => this.props.history.push('/')}>
           {(postMutation) =>(
             <button onClick={postMutation}>Submit</button>
           )}

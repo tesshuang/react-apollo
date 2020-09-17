@@ -23,7 +23,7 @@ class CreateLink extends Component {
 
     return(
       <div>
-        <div>
+        <div className="flex flex-column mt3">
           <input className="mb2" value={description} onChange={e => this.setState({description: e.target.value})} type="text" placeholder="A description for the link" />
           <input className="mb2" value={url} onChange={e => this.setState({url: e.target.value})} type="text" placeholder="A url for the link" />
         </div>

@@ -1,6 +1,27 @@
 import React, { Component } from 'react';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
 import { AUTH_TOKEN } from '../constants';
 import { timeDifferenceForDate } from '../utils';
+
+const VOTE_MUTATION = gql`
+  mutation VoteMutation($linkId: ID!) {
+    vote(linkId: $linkId) {
+      id
+      link {
+        id votes {
+          id
+          user {
+            id
+          }
+        }
+      }
+      user {
+        id
+      }
+    }
+  }
+`
 
 class Link extends Component {
   render() {
@@ -11,9 +32,14 @@ class Link extends Component {
         <div className="flex items-center">
           <span className="gray">{this.props.index + 1}</span>
           {authToken && (
-            <div className="ml1 gray f11" onClick={() => this._voteForLink()}>
-              <span role="img" aria-labelledby="upvote">👆</span>
-            </div>
+            <Mutation mutation={VOTE_MUTATION} variables={{ linkId: this.props.link.id}}>
+              {mutation => (
+                <div className="mh2 gray f11 pointer" onClick={mutation}>
+                <span role="img" aria-labelledby="upvote">👆</span>
+              </div>
+              )}
+            </Mutation>
+            
           )}
           <div>
             {this.props.link.description} ({this.props.link.url})

@@ -32,7 +32,11 @@ class Link extends Component {
         <div className="flex items-center">
           <span className="gray">{this.props.index + 1}</span>
           {authToken && (
-            <Mutation mutation={VOTE_MUTATION} variables={{ linkId: this.props.link.id}}>
+            <Mutation 
+              mutation={VOTE_MUTATION}
+              variables={{ linkId: this.props.link.id}}
+              update={(store, {date: { vote }}) => this.props.updateStoreAferVote(store, vote, this.props.link.id)}
+            >
               {mutation => (
                 <div className="mh2 gray f11 pointer" onClick={mutation}>
                 <span role="img" aria-labelledby="upvote">👆</span>

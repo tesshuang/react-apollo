@@ -35,7 +35,7 @@ class Link extends Component {
             <Mutation 
               mutation={VOTE_MUTATION}
               variables={{ linkId: this.props.link.id}}
-              update={(store, {date: { vote }}) => this.props.updateStoreAferVote(store, vote, this.props.link.id)}
+              update={(store, {data: { vote }}) => this.props.updateStoreAfterVote(store, vote, this.props.link.id)}
             >
               {mutation => (
                 <div className="mh2 gray f11 pointer" onClick={mutation}>

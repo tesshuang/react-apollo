@@ -45,6 +45,34 @@ const NEW_LINKS_SUBSCRIPTION = gql`
     }
   }
 `
+
+const NEW_VOTES_SUBCRIPTION = gql`
+  subscription {
+    newVote {
+      id
+      link {
+        id
+        url
+        description
+        createdAt
+        postedBy {
+          id
+          name
+        }
+        votes {
+          id
+          user{
+            id
+          }
+        }
+      }
+      user {
+        id
+      }
+    }
+  }
+`
+
 class LinkList extends Component {
   _updateCacheAfterVote = (store, createVote, linkId) => {
     const data = store.readQuery({ query: FEED_QUERY });
@@ -75,21 +103,28 @@ class LinkList extends Component {
     })
   }
 
+  _subsribeToNewVotes = subscribeToMore => {
+    subscribeToMore({
+      document: NEW_VOTES_SUBCRIPTION
+    })
+  }
+
   render() {
     return (
      <Query query={FEED_QUERY}>
        {({loading, error, data, subscribeToMore }) => {
-         if(loading) return <div>Loading...</div>
-         if(error) return <div>Error happened</div>
+          if(loading) return <div>Loading...</div>
+          if(error) return <div>Error happened</div>
 
-         this._subscribeToNewLink(subscribeToMore);
-
-         const linksToRender = data.feed.links;
-         return (
-           <div>
-             {linksToRender.map((link, index) => <Link key={link.id} link={link} index={index} updateStoreAfterVote={this._updateCacheAfterVote}/>)}
-           </div>
-         )
+          this._subscribeToNewLink(subscribeToMore);
+          this._subsribeToNewVotes(subscribeToMore);
+          
+          const linksToRender = data.feed.links;
+          return (
+            <div>
+              {linksToRender.map((link, index) => <Link key={link.id} link={link} index={index} updateStoreAfterVote={this._updateCacheAfterVote}/>)}
+            </div>
+          )
          }}
      </Query>
     )

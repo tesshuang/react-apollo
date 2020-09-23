@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import Link from './Link';
-import { LINK_PER_PAGE } from '../constants';
+import { LINKS_PER_PAGE } from '../constants';
 
 export const FEED_QUERY = gql`
   query FeedQuery($first: Int, $skip: Int, $orderBy: LinkOrderByInput){
@@ -77,7 +77,14 @@ const NEW_VOTES_SUBCRIPTION = gql`
 
 class LinkList extends Component {
   _updateCacheAfterVote = (store, createVote, linkId) => {
-    const data = store.readQuery({ query: FEED_QUERY });
+    const isNewPage = this.props.location.pathname.includes('new');
+    const page = parseInt(this.props.match.param.page, 10);
+
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+    const first = isNewPage ? LINKS_PER_PAGE : 100;
+    const orderBy = isNewPage ? 'createdAt_DESC' : null;
+
+    const data = store.readQuery({ query: FEED_QUERY, variables: { first, skip, orderBy } });
 
     const votedLink = data.feed.links.find(link => link.id === linkId);
     votedLink.votes = createVote.link.votes;
@@ -115,8 +122,8 @@ class LinkList extends Component {
     const isNewPage = this.props.location.pathname.includes('new');
     const page = parseInt(this.props.match.params.page, 10);
 
-    const skip = isNewPage ? (page - 1) * LINK_PER_PAGE : 0;
-    const first = isNewPage ? LINK_PER_PAGE : 100;
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+    const first = isNewPage ? LINKS_PER_PAGE : 100;
     const orderBy = isNewPage ? 'createdAt_DESC' : null;
     return { first, skip, orderBy }
   }
@@ -133,7 +140,7 @@ class LinkList extends Component {
 
   _nextPage = data => {
     const page = parseInt(this.props.match.params.page, 10);
-    if(page <= data.feed.count / LINK_PER_PAGE) {
+    if(page <= data.feed.count / LINKS_PER_PAGE) {
       const newPage = page + 1;
       this.props.history.push(`/new/${newPage}`)
     }
@@ -146,7 +153,7 @@ class LinkList extends Component {
       this.props.history.push(`/new/${previousPage}`);
     }
   }
-  
+
   render() {
     return (
      <Query query={FEED_QUERY} variables={this._getQueryVariables()}>
@@ -159,7 +166,7 @@ class LinkList extends Component {
           
           const linksToRender = this._getLinksToRender(data);
           const isNewPage = this.props.location.pathname.includes('new');
-          const pageIndex = this.props.match.params.page ? (this.props.match.params.page -1) * LINK_PER_PAGE : 0;
+          const pageIndex = this.props.match.params.page ? (this.props.match.params.page -1) * LINKS_PER_PAGE : 0;
 
           return (
             <Fragment>
